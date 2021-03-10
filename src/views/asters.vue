@@ -13,6 +13,14 @@
     >
       <p>CHARGEMENT...</p>
     </div>
+    <transition name="fade">
+      <p
+        v-if="error"
+        :class="`error`"
+      >
+        {{ error }}
+      </p>
+    </transition>
   </section>
 </template>
 
@@ -29,9 +37,11 @@ export default {
     AsterFilter
   },
   setup(_) {
-    const filter = ref('')
+    const filter = ref(String)
     const astersList = ref([])
     const isLoading = ref(Boolean)
+    const error = ref('')
+    const errorClass = ref('in_progress')
 
     const filteteredAstersList = computed(() => {
       switch (filter.value) {
@@ -49,9 +59,13 @@ export default {
 
     const getAllAsters = async () => {
       isLoading.value = true
-      await axios.get('https://api.le-systeme-solaire.net/rest/bodies/').then(resp => (astersList.value = resp.data.bodies)).catch(
-        (error) => console.log(error)
-      )
+      await axios
+      .get('https://api.le-systeme-solaire.net/rest/bodies/')
+      .then(resp => (astersList.value = resp.data.bodies))
+      .catch((error) => error.value = 'Une erreur est survenue')
+      setTimeout(() => {
+        error.value = ''
+      }, 2000);
       isLoading.value = false
     }
 
@@ -64,23 +78,44 @@ export default {
     return { 
       asters : filteteredAstersList, 
       isLoading : isLoading,
-      filtered
+      filtered : filtered,
+      error : error,
+      errorClass : errorClass
     }
   },
 }
 </script>
 
 <style scoped>
-main {
-  padding-top: 12vh;
-  background: rgb(19, 15, 70);
-}
-.section_one {
-  color: #fff;
-}
-.loading {
-  text-align: center;
-  height: 20vh;
-  line-height: 20vh;
-}
+  main {
+    padding-top: 12vh;
+    background: rgb(19, 15, 70);
+  }
+  .section_one {
+    color: #fff;
+  }
+  .error {
+    background: rgb(255, 89, 89);
+    color: #fff;
+    padding: .8rem 1.2rem;
+    width: auto;
+    max-width: 100%;
+    position: absolute;
+    top: 5vh;
+    transform: translateX(-50%);
+    left: 50%;
+  }
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.3s;
+  }
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
+  }
+  .loading {
+    text-align: center;
+    height: 20vh;
+    line-height: 20vh;
+  }
 </style>
