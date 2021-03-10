@@ -2,38 +2,69 @@
   <section class="section_one">
     <h1>Les astres</h1>
     <!-- {{ astersList }} -->
+    <aster-filter @filter="filtered($event)" />
     <aster-list
       v-if="!isLoading"
       :asters="asters"
     />
-    <div v-else class="loading">
-      CHARGEMENT ...
+    <div
+      v-else
+      class="loading"
+    >
+      <p>CHARGEMENT...</p>
     </div>
   </section>
 </template>
 
 <script>
-import axios from 'axios';
 import AsterList from '../components/aster_list.vue'
-import {onMounted, ref} from 'vue'
+import AsterFilter from '../components/aster_filter.vue'
+
+import {computed, onMounted, ref} from 'vue'
+import axios from 'axios';
 
 export default {
   components : {
-    AsterList
+    AsterList,
+    AsterFilter
   },
   setup(_) {
+    const filter = ref('')
     const astersList = ref([])
-    const isLoading =ref(Boolean)
+    const isLoading = ref(Boolean)
+
+    const filteteredAstersList = computed(() => {
+      switch (filter.value) {
+        case 'isPlanet':
+            return astersList.value.filter((aster) => aster.isPlanet === true)
+          break;
+        case 'withMoon':
+            return astersList.value.filter((aster) => aster.moons != null)
+          break;
+        default:
+          return astersList.value
+          break;
+      }
+    });
 
     const getAllAsters = async () => {
       isLoading.value = true
-      await axios.get('https://api.le-systeme-solaire.net/rest/bodies/').then(resp => (astersList.value = resp.data.bodies))
+      await axios.get('https://api.le-systeme-solaire.net/rest/bodies/').then(resp => (astersList.value = resp.data.bodies)).catch(
+        (error) => console.log(error)
+      )
       isLoading.value = false
     }
+
+    function filtered(event) {
+      filter.value = event
+    }
+
     onMounted(getAllAsters)
+
     return { 
-      asters : astersList, 
-      isLoading : isLoading
+      asters : filteteredAstersList, 
+      isLoading : isLoading,
+      filtered
     }
   },
 }

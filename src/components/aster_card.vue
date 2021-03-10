@@ -2,6 +2,7 @@
   <div class="aster_card">
     <article class="aster">
       {{ aster.name }}
+      {{ aster.isPlanet }}
       <router-link
         :to="{name : 'Aster', params : { id : aster.id }}"
         class="aster_link"

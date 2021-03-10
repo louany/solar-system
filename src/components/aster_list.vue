@@ -1,7 +1,6 @@
 <template>
   <div class="asters_list">
     <!-- {{ AsterCard }} -->
-    <aster-filter />
     <aster-card
       v-for="(aster, index) in asters"
       :key="index"
@@ -12,12 +11,10 @@
 
 <script>
 import AsterCard from './aster_card.vue'
-import AsterFilter from './aster_filter.vue'
 
 export default {
   components : {
       AsterCard,
-      AsterFilter
   },
   props: {
     asters : {
