@@ -2,7 +2,31 @@
   <div class="aster_card">
     <article class="aster">
       {{ aster.name }}
-      {{ aster.isPlanet }}
+      <p class="isPlanet">
+        <span>Planète : </span>
+        <span v-if="aster.isPlanet">
+          Oui
+        </span>
+        <span v-else>
+          Non
+        </span>
+      </p>
+      <p class="withMoon">
+        <span>Lunes :  </span>
+        <span v-if="aster.moons">
+          <ul>
+            <li
+              v-for="(moon, index) in aster.moons"
+              :key="index"
+            >
+              {{ moon.moon }}
+            </li>
+          </ul>
+        </span>
+        <span v-else>
+          Non
+        </span>
+      </p>
       <router-link
         :to="{name : 'Aster', params : { id : aster.id }}"
         class="aster_link"
